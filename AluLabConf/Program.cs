@@ -196,6 +196,7 @@ namespace AluLabConf
                 readAluLab.iDEnodebDuLab.Add((int)el.Element("id"));
                 readAluLab.EnodebDuLab.Add(eNodeBlu);
 
+
             }
 
             if (log.IsDebugEnabled)
