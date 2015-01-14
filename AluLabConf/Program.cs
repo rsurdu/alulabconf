@@ -9,7 +9,8 @@ using System.Xml;
 using System.Xml.Linq;
 using System.IO;
 using System.Text;
-
+using log4net;
+using log4net.Config;
 
 namespace AluLabConf
 {
@@ -17,6 +18,7 @@ namespace AluLabConf
     /// <summary>
     /// déclaration des classes privées
     /// </summary>
+    
     public class BandFreq
     {
         public int BandName {get; set;}
@@ -111,11 +113,14 @@ namespace AluLabConf
         /// </summary>
         static LabAlu readAluLab = new LabAlu();
         static cUserInput userInput = new cUserInput();
+        public static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         [STAThread]
 
         static void Main()
         {
+
+            log4net.Config.BasicConfigurator.Configure();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             AluLabConfForm myform = new AluLabConfForm();
@@ -152,7 +157,12 @@ namespace AluLabConf
 
             foreach (XElement el in lInQueryNodeB)
             {
-                System.Console.WriteLine("eNodeB {0}, macroEnodeB {1}, pci1 {2}, pci2 {3}, pci3 {4}, ipVlan0 {5}, ipVlan1 {6}", (string)el.Element("id"), (string)el.Element("macroEnodeB"), (string)el.Element("pci1"), (string)el.Element("pci2"), (string)el.Element("pci3"), (string)el.Element("ipVlan0"), (string)el.Element("ipVlan1"));
+
+                if (log.IsDebugEnabled)
+                {
+                    log.Debug(String.Format("eNodeB {0}, macroEnodeB {1}, pci1 {2}, pci2 {3}, pci3 {4}, ipVlan0 {5}, ipVlan1 {6}", (string)el.Element("id"), (string)el.Element("macroEnodeB"), (string)el.Element("pci1"), (string)el.Element("pci2"), (string)el.Element("pci3"), (string)el.Element("ipVlan0"), (string)el.Element("ipVlan1")));
+                    //System.Console.WriteLine("eNodeB {0}, macroEnodeB {1}, pci1 {2}, pci2 {3}, pci3 {4}, ipVlan0 {5}, ipVlan1 {6}", (string)el.Element("id"), (string)el.Element("macroEnodeB"), (string)el.Element("pci1"), (string)el.Element("pci2"), (string)el.Element("pci3"), (string)el.Element("ipVlan0"), (string)el.Element("ipVlan1"));
+                }
 
                 EnodeB eNodeBlu = new EnodeB();
 
@@ -163,35 +173,44 @@ namespace AluLabConf
                 eNodeBlu.pCi3 = (int)el.Element("pci3");
                 eNodeBlu.iPvlan0 = (string)el.Element("ipVlan0");
                 eNodeBlu.iPvlan1 = (string)el.Element("ipVlan1");
-
+                
                 readAluLab.iDEnodebDuLab.Add((int)el.Element("id"));
                 readAluLab.EnodebDuLab.Add(eNodeBlu);
 
             }
 
-            //foreach (EnodeB el in readAluLab.EnodebDuLab)
-            //{
-            //    System.Console.WriteLine("iDenodeB {0}", el.iDenodeB.ToString());
-            //    System.Console.WriteLine("MacroEnb {0}", el.MacroEnb.ToString());
-            //    System.Console.WriteLine("pCi1 {0}", el.pCi1.ToString());
-            //    System.Console.WriteLine("pCi2 {0}", el.pCi2.ToString());
-            //    System.Console.WriteLine("pCi3 {0}", el.pCi3.ToString());
-            //    System.Console.WriteLine("iPvlan0 {0}", el.iPvlan0);
-            //    System.Console.WriteLine("iPvlan1 {0}", el.iPvlan1);
-            //}
+            if (log.IsDebugEnabled)
+            {
+                //foreach (EnodeB el in readAluLab.EnodebDuLab)
+                //{
+                //    System.Console.WriteLine("iDenodeB {0}", el.iDenodeB.ToString());
+                //    System.Console.WriteLine("MacroEnb {0}", el.MacroEnb.ToString());
+                //    System.Console.WriteLine("pCi1 {0}", el.pCi1.ToString());
+                //    System.Console.WriteLine("pCi2 {0}", el.pCi2.ToString());
+                //    System.Console.WriteLine("pCi3 {0}", el.pCi3.ToString());
+                //    System.Console.WriteLine("iPvlan0 {0}", el.iPvlan0);
+                //    System.Console.WriteLine("iPvlan1 {0}", el.iPvlan1);
+                //}
 
-            System.Console.WriteLine("Ajout de {0} enodeB dans EnodebDuLab", readAluLab.EnodebDuLab.Count());
-            System.Console.WriteLine("Ajout de {0} enodeB dans iDEnodebDuLab", readAluLab.iDEnodebDuLab.Count());
+                log.Debug(String.Format("Ajout de {0} enodeB dans EnodebDuLab", readAluLab.EnodebDuLab.Count()));
+                log.Debug(String.Format("Ajout de {0} enodeB dans iDEnodebDuLab", readAluLab.iDEnodebDuLab.Count()));
+
+                //System.Console.WriteLine("Ajout de {0} enodeB dans EnodebDuLab", readAluLab.EnodebDuLab.Count());
+                //System.Console.WriteLine("Ajout de {0} enodeB dans iDEnodebDuLab", readAluLab.iDEnodebDuLab.Count());
+            }
             
             IEnumerable<XElement> lInQueryFreq = from el in root.Elements("BandSet").Elements("Band") select el;
 
             foreach (XElement el in lInQueryFreq)
             {
 
-                System.Console.WriteLine("id {0}, DownLoadFreq {1}, UpLoadFreq {2}", (string)el.Element("id"), (string)el.Element("DownLoadFreq"), (string)el.Element("UpLoadFreq"));
-
-                BandFreq oBandFreq = new BandFreq();
+                if (log.IsDebugEnabled)
+                {
+                    log.Debug(String.Format("id {0}, DownLoadFreq {1}, UpLoadFreq {2}", (string)el.Element("id"), (string)el.Element("DownLoadFreq"), (string)el.Element("UpLoadFreq")));
+                    //System.Console.WriteLine("id {0}, DownLoadFreq {1}, UpLoadFreq {2}", (string)el.Element("id"), (string)el.Element("DownLoadFreq"), (string)el.Element("UpLoadFreq"));
+                }
                 
+                BandFreq oBandFreq = new BandFreq();
                 oBandFreq.BandName = (int)el.Element("id");
                 oBandFreq.DownloadFreq = (int)el.Element("DownLoadFreq");
                 oBandFreq.UploadFreq = (int)el.Element("UpLoadFreq");
@@ -200,26 +219,38 @@ namespace AluLabConf
                 readAluLab.BandFreqDuLab.Add(oBandFreq);
             }
 
-            //foreach (BandFreq el in readAluLab.BandFreqDuLab)
-            //{
-            //    System.Console.WriteLine("Bandname {0}", el.BandName);
-            //    System.Console.WriteLine("DownloadFreq {0}", el.DownloadFreq.ToString());
-            //    System.Console.WriteLine("UploadFreq {0}", el.UploadFreq.ToString());
-            //}
+            if (log.IsDebugEnabled)
+            {
 
-            System.Console.WriteLine("Ajout de {0} Bandes de fréquence dans BandFreqDuLab", readAluLab.BandFreqDuLab.Count());
-            System.Console.WriteLine("Ajout de {0} Bandes de fréquence dans iDBandFreqDuLab", readAluLab.iDBandFreqDuLab.Count());
+                //foreach (BandFreq el in readAluLab.BandFreqDuLab)
+                //{
+                //    System.Console.WriteLine("Bandname {0}", el.BandName);
+                //    System.Console.WriteLine("DownloadFreq {0}", el.DownloadFreq.ToString());
+                //    System.Console.WriteLine("UploadFreq {0}", el.UploadFreq.ToString());
+                //}
 
+                log.Debug(String.Format("Ajout de {0} Bandes de fréquence dans BandFreqDuLab", readAluLab.BandFreqDuLab.Count()));
+                log.Debug(String.Format("Ajout de {0} Bandes de fréquence dans iDBandFreqDuLab", readAluLab.iDBandFreqDuLab.Count()));
+
+                //System.Console.WriteLine("Ajout de {0} Bandes de fréquence dans BandFreqDuLab", readAluLab.BandFreqDuLab.Count());
+                //System.Console.WriteLine("Ajout de {0} Bandes de fréquence dans iDBandFreqDuLab", readAluLab.iDBandFreqDuLab.Count());
+            }
         }
 
         public static String loadSampleFileToPatch(String fileName, String enodebName, String bandFreq)
         {
-            System.Console.WriteLine("Début Fonction : loadSampleFileToPatch");
 
-            System.Console.WriteLine("loadSampleFileToPatch:Fichier sélecionné {0} ", fileName);
-            System.Console.WriteLine("loadSampleFileToPatch:enodebName sélecionné {0} ", enodebName);
-            System.Console.WriteLine("loadSampleFileToPatch:bandFreq sélecionné {0} ", bandFreq);
+            if (log.IsDebugEnabled)
+            {
+                log.Debug(String.Format("loadSampleFileToPatch:Fichier sélecionné {0} ", fileName));
+                log.Debug(String.Format("loadSampleFileToPatch:enodebName sélecionné {0} ", enodebName));
+                log.Debug(String.Format("loadSampleFileToPatch:bandFreq sélecionné {0} ", bandFreq));
 
+                //System.Console.WriteLine("Début Fonction : loadSampleFileToPatch");
+                //System.Console.WriteLine("loadSampleFileToPatch:Fichier sélecionné {0} ", fileName);
+                //System.Console.WriteLine("loadSampleFileToPatch:enodebName sélecionné {0} ", enodebName);
+                //System.Console.WriteLine("loadSampleFileToPatch:bandFreq sélecionné {0} ", bandFreq);
+            }
             xPathToUpdate pathToPatch = new xPathToUpdate();
 
             userInput.xmlSourceFileName = fileName;
@@ -252,9 +283,13 @@ namespace AluLabConf
 
            string savingFileName = @FolderName + @"\" + strUniqueName + ".xml";
 
-           System.Console.WriteLine("loadSampleFileToPatch : Ecriture du fichier résultat dans {0}", savingFileName);
+           if (log.IsDebugEnabled)
+           {
+               log.Debug(string.Format("loadSampleFileToPatch : Ecriture du fichier résultat dans {0}", savingFileName));
+               //System.Console.WriteLine("loadSampleFileToPatch : Ecriture du fichier résultat dans {0}", savingFileName);
+           }
+           
            doc.Save(savingFileName);
-           System.Console.WriteLine("Fin Fonction : loadSampleFileToPatch");
 
            return savingFileName;
         }
@@ -262,67 +297,80 @@ namespace AluLabConf
         public static void findSelectedBandFreqInLab(String bandFreq)
         {
 
-            System.Console.WriteLine("findSelectedBandFreqInLab : DEBUT FONCTION");
-            
+
             int localBandeFreq;
 
             if (int.TryParse(bandFreq, out localBandeFreq))
             {
-                System.Console.WriteLine("findSelectedBandFreqInLab : localBandeFreq == {0}", localBandeFreq.ToString());
 
+                if (log.IsDebugEnabled)
+                {
+                    log.Debug(string.Format("findSelectedBandFreqInLab : localBandeFreq == {0}", localBandeFreq.ToString()));
+                    //System.Console.WriteLine("findSelectedBandFreqInLab : localBandeFreq == {0}", localBandeFreq.ToString());
+                }
+                
                 if (null == readAluLab.BandFreqDuLab.Find(delegate(BandFreq a) { return a.BandName == localBandeFreq; }))
                 {
-                    System.Console.WriteLine("findSelectedBandFreqInLab : La valeur recherchée n'est pas présente dans le fichier de configuration");
+                    log.Error(string.Format("findSelectedBandFreqInLab : La valeur recherchée n'est pas présente dans le fichier de configuration"));
+                    //System.Console.WriteLine("findSelectedBandFreqInLab : La valeur recherchée n'est pas présente dans le fichier de configuration");
                 }
                 else
                 {
                     userInput.selectedParentNodeName.cBandFreq = readAluLab.BandFreqDuLab.Find(delegate(BandFreq a) { return a.BandName == localBandeFreq; });
-                    System.Console.WriteLine("findSelectedBandFreqInLab : ENFIN !!!!!!!!!!!!!!!!!!!!!!!!");
+                    if (log.IsDebugEnabled)
+                    {
+                        log.Debug(string.Format("findSelectedBandFreqInLab : ENFIN !!!!!!!!!!!!!!!!!!!!!!!!"));
+                        //System.Console.WriteLine("findSelectedBandFreqInLab : ENFIN !!!!!!!!!!!!!!!!!!!!!!!!");
+                    }
                 }
             }
             else
             {
-                System.Console.WriteLine("findSelectedBandFreqInLab : Erreur de conversion string bandFred en Int");
+                log.Error(string.Format("findSelectedBandFreqInLab : Erreur de conversion string bandFred en Int"));
+                //System.Console.WriteLine("findSelectedBandFreqInLab : Erreur de conversion string bandFred en Int");
             }
-
-            System.Console.WriteLine("findSelectedBandFreqInLab : FIN FONCTION");
 
         }
 
         public static void findSelectedEnodeBInLab(String enodebName)
         {
 
-            System.Console.WriteLine("findSelectedEnodeBInLab : DEBUT FONCTION");
-            
+
             int localEnodebName;
 
             if (int.TryParse(enodebName, out localEnodebName))
             {
-                System.Console.WriteLine("localEnodebName == {0}", localEnodebName.ToString());
+
+                    if (log.IsDebugEnabled) log.Debug(string.Format("localEnodebName == {0}", localEnodebName.ToString()));
+                    //System.Console.WriteLine("localEnodebName == {0}", localEnodebName.ToString());
 
                 if (null == readAluLab.EnodebDuLab.Find(delegate(EnodeB a) { return a.iDenodeB == localEnodebName; }))
                 {
-                    System.Console.WriteLine("findSelectedEnodeBInLab : La valeur recherchée n'est pas présente dans le fichier de configuration");
+                    if (log.IsErrorEnabled) log.Error("findSelectedEnodeBInLab : La valeur recherchée n'est pas présente dans le fichier de configuration");
+                    //System.Console.WriteLine("findSelectedEnodeBInLab : La valeur recherchée n'est pas présente dans le fichier de configuration");
                 }
                 else
                 {
                     userInput.selectedParentNodeName.cEnodeB = readAluLab.EnodebDuLab.Find(delegate(EnodeB a) { return a.iDenodeB == localEnodebName; });
-                    System.Console.WriteLine("findSelectedEnodeBInLab : ENFIN !!!!!!!!!!!!!!!!!!!!!!!!");
+                    if (log.IsDebugEnabled)
+                    {
+                            if (log.IsDebugEnabled) log.Debug("findSelectedEnodeBInLab : ENFIN !!!!!!!!!!!!!!!!!!!!!!!!");
+                            //System.Console.WriteLine("findSelectedEnodeBInLab : ENFIN !!!!!!!!!!!!!!!!!!!!!!!!");
+                    }
                 }
             }
             else
             {
-                System.Console.WriteLine("findSelectedEnodeBInLab : Erreur de conversion string bandFred en Int");
+                if (log.IsErrorEnabled) log.Error("Erreur de conversion string bandFred en Int");
+                //System.Console.WriteLine("findSelectedEnodeBInLab : Erreur de conversion string bandFred en Int");
             }
-
-            System.Console.WriteLine("findSelectedEnodeBInLab : FIN FONCTION");
 
         }
 
         public static void readXMLDocWithFieldsToUpdate(XmlElement xmlDocument, XmlNamespaceManager ns, xPathToUpdate pathToPatch)
         {
 
-            System.Console.WriteLine("Début fonction : readXMLDocWithFieldsToUpdate");
+            if (log.IsInfoEnabled) log.Info("readXMLDocWithFieldsToUpdate : Début Fonction");
 
             readXpathValue(xmlDocument, ns, pathToPatch.mPathUniqueName);
 
@@ -381,16 +429,16 @@ namespace AluLabConf
             
             //INTER FREQ
             readXpathValue(xmlDocument, ns, pathToPatch.mInterLteNeighboringCellRelationPci);
-            
 
-            System.Console.WriteLine("Fin fonction : readXMLDocWithFieldsToUpdate");
+            if (log.IsInfoEnabled) log.Info("readXMLDocWithFieldsToUpdate : FIn Fonction");
         }
 
 
 
         public static void updateXMLDoc(XmlElement xmlDocument, XmlNamespaceManager ns, xPathToUpdate pathToPatch, String strUniqueName, String strNodeBName)
         {
-            System.Console.WriteLine("Début fonction : updateXMLDoc");
+
+            if (log.IsInfoEnabled) log.Info("updateXMLDoc : Début Fonction");
 
             updateXpathValue(xmlDocument, ns, pathToPatch.mPathUniqueName, strUniqueName);
 
@@ -432,7 +480,7 @@ namespace AluLabConf
                 updateXpathValue(xmlDocument, ns, xPath, userInput.selectedParentNodeName.cBandFreq.UploadFreq.ToString());
             }
 
-            System.Console.WriteLine("Fin fonction : updateXMLDoc");
+            if (log.IsInfoEnabled) log.Info("updateXMLDoc : Fin Fonction");
 
         }
 
@@ -440,19 +488,24 @@ namespace AluLabConf
         public static void readXpathValue(XmlElement xmlDocument, XmlNamespaceManager ns, String pathToRead)
         {
 
+
+
             XmlNode theSelectedNode = xmlDocument.SelectSingleNode(pathToRead, ns);
 
-            System.Console.WriteLine(" Xpath TO READ {0} ", pathToRead);
+            if (log.IsDebugEnabled) log.Debug(string.Format(" Xpath TO READ {0} ", pathToRead));
+            //System.Console.WriteLine(" Xpath TO READ {0} ", pathToRead);
 
             if (theSelectedNode != null)
             {
-                System.Console.WriteLine("Valeur du UniqueName {0} ", theSelectedNode.InnerText);
+                if (log.IsDebugEnabled) log.Debug(string.Format("Valeur du UniqueName {0} ", theSelectedNode.InnerText));
+                //System.Console.WriteLine("Valeur du UniqueName {0} ", theSelectedNode.InnerText);
             }
             else
             {
-                System.Console.WriteLine("Le Chemin Xpath {0} n'éxiste pas ou le champ est vide ", pathToRead);
+                if(log.IsDebugEnabled) log.Debug(string.Format("Le Chemin Xpath {0} n'éxiste pas ou le champ est vide ", pathToRead));
+                //System.Console.WriteLine("Le Chemin Xpath {0} n'éxiste pas ou le champ est vide ", pathToRead);
             }
-            
+
         }
 
         public static void readXpathNode(XmlElement xmlDocument, XmlNamespaceManager ns, String pathToRead)
@@ -460,15 +513,18 @@ namespace AluLabConf
 
             XmlNode theSelectedNode = xmlDocument.SelectSingleNode(pathToRead, ns);
 
-            System.Console.WriteLine("Xpath NODE TO READ {0} ", pathToRead);
+            if (log.IsDebugEnabled) log.Debug(string.Format("Xpath NODE TO READ {0} ", pathToRead));
+            //System.Console.WriteLine("Xpath NODE TO READ {0} ", pathToRead);
 
             if (theSelectedNode != null)
             {
-                System.Console.WriteLine("Valeur du Noeud {0} ", theSelectedNode.InnerXml);
+                if (log.IsDebugEnabled) log.Debug(string.Format("Valeur du Noeud {0} ", theSelectedNode.InnerXml));
+                //System.Console.WriteLine("Valeur du Noeud {0} ", theSelectedNode.InnerXml);
             }
             else
             {
-                System.Console.WriteLine("Le Chemin Xpath {0} n'éxiste pas ou le noeud est vide ", pathToRead);
+                if (log.IsDebugEnabled) log.Debug(string.Format("Le Chemin Xpath {0} n'éxiste pas ou le noeud est vide ", pathToRead));
+                //System.Console.WriteLine("Le Chemin Xpath {0} n'éxiste pas ou le noeud est vide ", pathToRead);
             }
         }
 
@@ -477,13 +533,16 @@ namespace AluLabConf
 
             XmlNode theSelectedNode = xmlDocument.SelectSingleNode(pathToPatch, ns);
 
-            System.Console.WriteLine("Update Xpath {0} with value {1} ", pathToPatch, strToUpdate);
+            if (log.IsDebugEnabled) log.Debug(string.Format("Update Xpath {0} with value {1} ", pathToPatch, strToUpdate));
+            //System.Console.WriteLine("Update Xpath {0} with value {1} ", pathToPatch, strToUpdate);
 
             if (theSelectedNode != null)
             {
-                System.Console.WriteLine("Valeur du theSelectedNode avant update {0} ", theSelectedNode.InnerText);
+                if (log.IsDebugEnabled) log.Debug(string.Format("Valeur du theSelectedNode avant update {0} ", theSelectedNode.InnerText));
+                //System.Console.WriteLine("Valeur du theSelectedNode avant update {0} ", theSelectedNode.InnerText);
                 theSelectedNode.InnerText = strToUpdate;
-                System.Console.WriteLine("Valeur du theSelectedNode après update {0} ", theSelectedNode.InnerText);
+                if (log.IsDebugEnabled) log.Debug(string.Format("Valeur du theSelectedNode après update {0} ", theSelectedNode.InnerText));
+                //System.Console.WriteLine("Valeur du theSelectedNode après update {0} ", theSelectedNode.InnerText);
             }
 
         }

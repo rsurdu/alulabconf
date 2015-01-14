@@ -8,12 +8,17 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using log4net;
 
 
 namespace AluLabConf
 {
+
     public partial class AluLabConfForm : Form
     {
+
+        private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         public AluLabConfForm()
         {
             InitializeComponent();
@@ -41,8 +46,10 @@ namespace AluLabConf
 
         private void label1_Click(object sender, EventArgs e)
         {
+            
             Stream myStream = null;
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
+
 
             openFileDialog1.InitialDirectory = @"c:\";
             openFileDialog1.Filter = "xml files (*.xml)|*.xml|All files (*.*)|*.*";
@@ -57,14 +64,18 @@ namespace AluLabConf
                                                             
                     if ((myStream = openFileDialog1.OpenFile()) != null)
                     {
-
-                        System.Console.WriteLine("Source File  To Update : {0}", openFileDialog1.FileName);
+                        if (log.IsDebugEnabled)
+                        {
+                            if (log.IsDebugEnabled) log.Debug(string.Format("Source File  To Update : {0}", openFileDialog1.FileName));
+                            //System.Console.WriteLine("Source File  To Update : {0}", openFileDialog1.FileName);
+                        }
                         textBox1.Text = openFileDialog1.FileName;
-                    
+                
                     }
                 }
                 catch (Exception ex)
                 {
+                    if (log.IsErrorEnabled) log.Error(string.Format("Error: Could not read file from disk. Original error: " + ex.Message));
                     MessageBox.Show("Error: Could not read file from disk. Original error: " + ex.Message);
                 }
             }
@@ -74,8 +85,11 @@ namespace AluLabConf
 
         private void ButtonGenerate(object sender, EventArgs e)
         {
-
-            System.Console.WriteLine("Lancement du parsing du fichier sélectionné");
+            if (log.IsDebugEnabled)
+            {
+                if (log.IsDebugEnabled) log.Debug("Lancement du parsing du fichier sélectionné");
+                //System.Console.WriteLine("Lancement du parsing du fichier sélectionné");
+            }
 
             if (!oInterRadio10.Checked && !oInterRadio5.Checked)
             {
@@ -88,6 +102,7 @@ namespace AluLabConf
             }
             else
             {
+                if (log.IsErrorEnabled) log.Error("Veuillez sélectionner un fichier XML à modifier");
                 MessageBox.Show("Veuillez sélectionner un fichier XML à modifier");
             }
         
