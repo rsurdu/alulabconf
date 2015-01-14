@@ -35,10 +35,10 @@
             this.oParentBandFreq = new System.Windows.Forms.Label();
             this.oParentComboFreq = new System.Windows.Forms.ComboBox();
             this.oGroupBoxIntra = new System.Windows.Forms.GroupBox();
+            this.oIntraComboNodeB = new System.Windows.Forms.ComboBox();
             this.oCheckBoxIntraActivate = new System.Windows.Forms.CheckBox();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.oIntraComboNodeB = new System.Windows.Forms.Label();
-            this.oIntranComboNodeB = new System.Windows.Forms.ComboBox();
+            this.oIntraTxtNodeB = new System.Windows.Forms.Label();
             this.oInterGroupBox = new System.Windows.Forms.GroupBox();
             this.oCheckBoxInterActivate = new System.Windows.Forms.CheckBox();
             this.oCheckBoxInterS1 = new System.Windows.Forms.CheckBox();
@@ -46,13 +46,13 @@
             this.oInterRadio10 = new System.Windows.Forms.RadioButton();
             this.oInterRadio5 = new System.Windows.Forms.RadioButton();
             this.oInterTxtBandeFreq = new System.Windows.Forms.Label();
-            this.oInterComboBandFreq = new System.Windows.Forms.ComboBox();
             this.oInterTxtNodeB = new System.Windows.Forms.Label();
             this.oInterComboNodeB = new System.Windows.Forms.ComboBox();
             this.oButton1 = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.oButton2 = new System.Windows.Forms.Button();
             this.textBox2 = new System.Windows.Forms.TextBox();
+            this.oInterComboBandFreq = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.labAluBindingSource)).BeginInit();
             this.oGroupBoxIntra.SuspendLayout();
             this.oInterGroupBox.SuspendLayout();
@@ -60,12 +60,15 @@
             // 
             // oParentComboNodeB
             // 
-            this.oParentComboNodeB.DataSource = this.labAluBindingSource;
             this.oParentComboNodeB.FormattingEnabled = true;
             this.oParentComboNodeB.Location = new System.Drawing.Point(103, 77);
             this.oParentComboNodeB.Name = "oParentComboNodeB";
             this.oParentComboNodeB.Size = new System.Drawing.Size(121, 21);
             this.oParentComboNodeB.TabIndex = 0;
+            // 
+            // labAluBindingSource
+            // 
+            this.labAluBindingSource.CurrentChanged += new System.EventHandler(this.labAluBindingSource_CurrentChanged_1);
             // 
             // oParentEnodeB
             // 
@@ -99,16 +102,24 @@
             // 
             // oGroupBoxIntra
             // 
+            this.oGroupBoxIntra.Controls.Add(this.oIntraComboNodeB);
             this.oGroupBoxIntra.Controls.Add(this.oCheckBoxIntraActivate);
             this.oGroupBoxIntra.Controls.Add(this.checkBox1);
-            this.oGroupBoxIntra.Controls.Add(this.oIntraComboNodeB);
-            this.oGroupBoxIntra.Controls.Add(this.oIntranComboNodeB);
+            this.oGroupBoxIntra.Controls.Add(this.oIntraTxtNodeB);
             this.oGroupBoxIntra.Location = new System.Drawing.Point(3, 104);
             this.oGroupBoxIntra.Name = "oGroupBoxIntra";
             this.oGroupBoxIntra.Size = new System.Drawing.Size(248, 139);
             this.oGroupBoxIntra.TabIndex = 4;
             this.oGroupBoxIntra.TabStop = false;
             this.oGroupBoxIntra.Text = "Neighboring Intra";
+            // 
+            // oIntraComboNodeB
+            // 
+            this.oIntraComboNodeB.FormattingEnabled = true;
+            this.oIntraComboNodeB.Location = new System.Drawing.Point(6, 73);
+            this.oIntraComboNodeB.Name = "oIntraComboNodeB";
+            this.oIntraComboNodeB.Size = new System.Drawing.Size(121, 21);
+            this.oIntraComboNodeB.TabIndex = 14;
             // 
             // oCheckBoxIntraActivate
             // 
@@ -131,33 +142,25 @@
             this.checkBox1.Text = "X2";
             this.checkBox1.UseVisualStyleBackColor = true;
             // 
-            // oIntraComboNodeB
+            // oIntraTxtNodeB
             // 
-            this.oIntraComboNodeB.AutoSize = true;
-            this.oIntraComboNodeB.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.oIntraComboNodeB.Location = new System.Drawing.Point(32, 57);
-            this.oIntraComboNodeB.Name = "oIntraComboNodeB";
-            this.oIntraComboNodeB.Size = new System.Drawing.Size(63, 16);
-            this.oIntraComboNodeB.TabIndex = 7;
-            this.oIntraComboNodeB.Text = "EnodeB";
-            // 
-            // oIntranComboNodeB
-            // 
-            this.oIntranComboNodeB.FormattingEnabled = true;
-            this.oIntranComboNodeB.Location = new System.Drawing.Point(6, 73);
-            this.oIntranComboNodeB.Name = "oIntranComboNodeB";
-            this.oIntranComboNodeB.Size = new System.Drawing.Size(121, 21);
-            this.oIntranComboNodeB.TabIndex = 6;
+            this.oIntraTxtNodeB.AutoSize = true;
+            this.oIntraTxtNodeB.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.oIntraTxtNodeB.Location = new System.Drawing.Point(32, 57);
+            this.oIntraTxtNodeB.Name = "oIntraTxtNodeB";
+            this.oIntraTxtNodeB.Size = new System.Drawing.Size(63, 16);
+            this.oIntraTxtNodeB.TabIndex = 7;
+            this.oIntraTxtNodeB.Text = "EnodeB";
             // 
             // oInterGroupBox
             // 
+            this.oInterGroupBox.Controls.Add(this.oInterComboBandFreq);
             this.oInterGroupBox.Controls.Add(this.oCheckBoxInterActivate);
             this.oInterGroupBox.Controls.Add(this.oCheckBoxInterS1);
             this.oInterGroupBox.Controls.Add(this.oCheckBoxInterX2);
             this.oInterGroupBox.Controls.Add(this.oInterRadio10);
             this.oInterGroupBox.Controls.Add(this.oInterRadio5);
             this.oInterGroupBox.Controls.Add(this.oInterTxtBandeFreq);
-            this.oInterGroupBox.Controls.Add(this.oInterComboBandFreq);
             this.oInterGroupBox.Controls.Add(this.oInterTxtNodeB);
             this.oInterGroupBox.Controls.Add(this.oInterComboNodeB);
             this.oInterGroupBox.Location = new System.Drawing.Point(263, 104);
@@ -232,14 +235,6 @@
             this.oInterTxtBandeFreq.TabIndex = 7;
             this.oInterTxtBandeFreq.Text = "BandeFreq";
             // 
-            // oInterComboBandFreq
-            // 
-            this.oInterComboBandFreq.FormattingEnabled = true;
-            this.oInterComboBandFreq.Location = new System.Drawing.Point(133, 73);
-            this.oInterComboBandFreq.Name = "oInterComboBandFreq";
-            this.oInterComboBandFreq.Size = new System.Drawing.Size(121, 21);
-            this.oInterComboBandFreq.TabIndex = 6;
-            // 
             // oInterTxtNodeB
             // 
             this.oInterTxtNodeB.AutoSize = true;
@@ -292,6 +287,14 @@
             this.textBox2.Size = new System.Drawing.Size(511, 20);
             this.textBox2.TabIndex = 9;
             // 
+            // oInterComboBandFreq
+            // 
+            this.oInterComboBandFreq.FormattingEnabled = true;
+            this.oInterComboBandFreq.Location = new System.Drawing.Point(133, 73);
+            this.oInterComboBandFreq.Name = "oInterComboBandFreq";
+            this.oInterComboBandFreq.Size = new System.Drawing.Size(121, 21);
+            this.oInterComboBandFreq.TabIndex = 10;
+            // 
             // AluLabConfForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -329,10 +332,8 @@
         public System.Windows.Forms.ComboBox oParentComboFreq;
         private System.Windows.Forms.GroupBox oGroupBoxIntra;
         private System.Windows.Forms.GroupBox oInterGroupBox;
-        public System.Windows.Forms.Label oIntraComboNodeB;
-        public System.Windows.Forms.ComboBox oIntranComboNodeB;
+        public System.Windows.Forms.Label oIntraTxtNodeB;
         private System.Windows.Forms.Label oInterTxtBandeFreq;
-        public System.Windows.Forms.ComboBox oInterComboBandFreq;
         private System.Windows.Forms.Label oInterTxtNodeB;
         public System.Windows.Forms.ComboBox oInterComboNodeB;
         public System.Windows.Forms.RadioButton oInterRadio10;
@@ -347,6 +348,8 @@
         public System.Windows.Forms.TextBox textBox2;
         private System.Windows.Forms.CheckBox oCheckBoxIntraActivate;
         private System.Windows.Forms.CheckBox oCheckBoxInterActivate;
+        public System.Windows.Forms.ComboBox oIntraComboNodeB;
+        public System.Windows.Forms.ComboBox oInterComboBandFreq;
     }
 }
 

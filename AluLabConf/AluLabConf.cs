@@ -25,9 +25,9 @@ namespace AluLabConf
 
             if (!oCheckBoxIntraActivate.Checked)
             {
-                oIntranComboNodeB.Visible = false;
-                checkBox1.Visible = false;
                 oIntraComboNodeB.Visible = false;
+                checkBox1.Visible = false;
+                oIntraTxtNodeB.Visible = false;
             }
 
             if (!oCheckBoxInterActivate.Checked)
@@ -141,15 +141,15 @@ namespace AluLabConf
 
             if (!oCheckBoxIntraActivate.Checked)
             {
-                oIntranComboNodeB.Visible = false;
-                checkBox1.Visible = false;
                 oIntraComboNodeB.Visible = false;
+                checkBox1.Visible = false;
+                oIntraTxtNodeB.Visible = false;
             }
             else
             {
-                oIntranComboNodeB.Visible = true;
-                checkBox1.Visible = true;
                 oIntraComboNodeB.Visible = true;
+                checkBox1.Visible = true;
+                oIntraTxtNodeB.Visible = true;
             }
         }
 
@@ -202,6 +202,11 @@ namespace AluLabConf
         }
 
         private void oParentComboFreq_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void labAluBindingSource_CurrentChanged_1(object sender, EventArgs e)
         {
 
         }

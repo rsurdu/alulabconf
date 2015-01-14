@@ -132,7 +132,6 @@ namespace AluLabConf
             if (log.IsInfoEnabled) log.Info("Main : Début Fonction");
 
             XmlConfigurator.Configure(new System.IO.FileInfo(@Conf.loggerCfgFile));
-            //log4net.Config.BasicConfigurator.Configure();
 
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
@@ -141,15 +140,20 @@ namespace AluLabConf
             LoadConf(readAluLab);
 
             // Ajout des données dans les contrôles oParentComboNodeB
+            myform.oParentComboNodeB.BindingContext = new BindingContext();
             myform.oParentComboNodeB.DataSource = readAluLab.iDEnodebDuLab;
+            myform.oParentComboFreq.BindingContext = new BindingContext(); 
             myform.oParentComboFreq.DataSource = readAluLab.iDBandFreqDuLab;
 
             // Ajout des données dans les contrôles oInterComboNodeB
+            myform.oInterComboNodeB.BindingContext = new BindingContext();
             myform.oInterComboNodeB.DataSource = readAluLab.iDEnodebDuLab;
+            myform.oInterComboBandFreq.BindingContext = new BindingContext();
             myform.oInterComboBandFreq.DataSource = readAluLab.iDBandFreqDuLab;
 
-            // Ajout des données dans les contrôles oIntranComboNodeB
-            myform.oIntranComboNodeB.DataSource = readAluLab.iDEnodebDuLab;
+            // Ajout des données dans les contrôles oIntraComboNodeB
+            myform.oIntraComboNodeB.BindingContext = new BindingContext();
+            myform.oIntraComboNodeB.DataSource = readAluLab.iDEnodebDuLab;
 
             //loadSampleFileToPatch();
 
@@ -590,7 +594,7 @@ namespace AluLabConf
         public xPathToUpdate()
         {
 
-            if (log.IsInfoEnabled) log.Info("xPathToUpdate : Début Constructueur");
+            if (log.IsInfoEnabled) log.Info("xPathToUpdate : Début Constructeur");
 
             // PARENT PATH
             this.mPathUniqueName = "//conf:config/enb:ENBEquipment/enb:attributes/enb:uniqueName";
@@ -663,7 +667,7 @@ namespace AluLabConf
             // INTER PATH
             this.mInterLteNeighboringCellRelationPci = "//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='1']/enb:LteNeighboring[enb:rdnId='0']/enb:LteNeighboringFreqConf[enb:rdnId='1']/enb:LteNeighboringCellRelation[enb:uniqueName='2']/enb:attributes/enb:pci";
 
-            if (log.IsInfoEnabled) log.Info("xPathToUpdate : Fin Constructueur");
+            if (log.IsInfoEnabled) log.Info("xPathToUpdate : Fin Constructeur");
 
         }
 
