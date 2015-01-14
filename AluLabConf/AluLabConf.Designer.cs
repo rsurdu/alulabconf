@@ -37,9 +37,10 @@
             this.oGroupBoxIntra = new System.Windows.Forms.GroupBox();
             this.oIntraComboNodeB = new System.Windows.Forms.ComboBox();
             this.oCheckBoxIntraActivate = new System.Windows.Forms.CheckBox();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.oCheckBoxIntraX2 = new System.Windows.Forms.CheckBox();
             this.oIntraTxtNodeB = new System.Windows.Forms.Label();
             this.oInterGroupBox = new System.Windows.Forms.GroupBox();
+            this.oInterComboBandFreq = new System.Windows.Forms.ComboBox();
             this.oCheckBoxInterActivate = new System.Windows.Forms.CheckBox();
             this.oCheckBoxInterS1 = new System.Windows.Forms.CheckBox();
             this.oCheckBoxInterX2 = new System.Windows.Forms.CheckBox();
@@ -52,7 +53,6 @@
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.oButton2 = new System.Windows.Forms.Button();
             this.textBox2 = new System.Windows.Forms.TextBox();
-            this.oInterComboBandFreq = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.labAluBindingSource)).BeginInit();
             this.oGroupBoxIntra.SuspendLayout();
             this.oInterGroupBox.SuspendLayout();
@@ -98,13 +98,13 @@
             this.oParentComboFreq.Name = "oParentComboFreq";
             this.oParentComboFreq.Size = new System.Drawing.Size(121, 21);
             this.oParentComboFreq.TabIndex = 2;
-            this.oParentComboFreq.SelectedIndexChanged += new System.EventHandler(this.oParentComboFreq_SelectedIndexChanged);
+            this.oParentComboFreq.SelectionChangeCommitted += new System.EventHandler(this.oParentComboFreq_SelectedValueChanged);
             // 
             // oGroupBoxIntra
             // 
             this.oGroupBoxIntra.Controls.Add(this.oIntraComboNodeB);
             this.oGroupBoxIntra.Controls.Add(this.oCheckBoxIntraActivate);
-            this.oGroupBoxIntra.Controls.Add(this.checkBox1);
+            this.oGroupBoxIntra.Controls.Add(this.oCheckBoxIntraX2);
             this.oGroupBoxIntra.Controls.Add(this.oIntraTxtNodeB);
             this.oGroupBoxIntra.Location = new System.Drawing.Point(3, 104);
             this.oGroupBoxIntra.Name = "oGroupBoxIntra";
@@ -132,15 +132,16 @@
             this.oCheckBoxIntraActivate.UseVisualStyleBackColor = true;
             this.oCheckBoxIntraActivate.Click += new System.EventHandler(this.click_CheckBoxIntraActivate);
             // 
-            // checkBox1
+            // oCheckBoxIntraX2
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(9, 111);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(39, 17);
-            this.checkBox1.TabIndex = 11;
-            this.checkBox1.Text = "X2";
-            this.checkBox1.UseVisualStyleBackColor = true;
+            this.oCheckBoxIntraX2.AutoSize = true;
+            this.oCheckBoxIntraX2.Location = new System.Drawing.Point(9, 111);
+            this.oCheckBoxIntraX2.Name = "oCheckBoxIntraX2";
+            this.oCheckBoxIntraX2.Size = new System.Drawing.Size(39, 17);
+            this.oCheckBoxIntraX2.TabIndex = 11;
+            this.oCheckBoxIntraX2.Text = "X2";
+            this.oCheckBoxIntraX2.UseVisualStyleBackColor = true;
+            this.oCheckBoxIntraX2.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged_1);
             // 
             // oIntraTxtNodeB
             // 
@@ -169,6 +170,15 @@
             this.oInterGroupBox.TabIndex = 5;
             this.oInterGroupBox.TabStop = false;
             this.oInterGroupBox.Text = "Neighboring Inter";
+            // 
+            // oInterComboBandFreq
+            // 
+            this.oInterComboBandFreq.FormattingEnabled = true;
+            this.oInterComboBandFreq.Location = new System.Drawing.Point(133, 73);
+            this.oInterComboBandFreq.Name = "oInterComboBandFreq";
+            this.oInterComboBandFreq.Size = new System.Drawing.Size(121, 21);
+            this.oInterComboBandFreq.TabIndex = 10;
+            this.oInterComboBandFreq.SelectionChangeCommitted += new System.EventHandler(this.oParentComboFreq_SelectedValueChanged);
             // 
             // oCheckBoxInterActivate
             // 
@@ -287,14 +297,6 @@
             this.textBox2.Size = new System.Drawing.Size(511, 20);
             this.textBox2.TabIndex = 9;
             // 
-            // oInterComboBandFreq
-            // 
-            this.oInterComboBandFreq.FormattingEnabled = true;
-            this.oInterComboBandFreq.Location = new System.Drawing.Point(133, 73);
-            this.oInterComboBandFreq.Name = "oInterComboBandFreq";
-            this.oInterComboBandFreq.Size = new System.Drawing.Size(121, 21);
-            this.oInterComboBandFreq.TabIndex = 10;
-            // 
             // AluLabConfForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -340,7 +342,7 @@
         public System.Windows.Forms.RadioButton oInterRadio5;
         public System.Windows.Forms.CheckBox oCheckBoxInterX2;
         public System.Windows.Forms.CheckBox oCheckBoxInterS1;
-        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.CheckBox oCheckBoxIntraX2;
         private System.Windows.Forms.BindingSource labAluBindingSource;
         public System.Windows.Forms.Button oButton1;
         public System.Windows.Forms.TextBox textBox1;

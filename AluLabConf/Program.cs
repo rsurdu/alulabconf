@@ -262,6 +262,7 @@ namespace AluLabConf
             }
 
             xPathToUpdate pathToPatch = new xPathToUpdate();
+            xPathToUpdateInter pathToPatchInter = new xPathToUpdateInter();
 
             userInput.xmlSourceFileName = fileName;
             BandFreq selectedBandeFreq = new BandFreq();
@@ -288,7 +289,7 @@ namespace AluLabConf
            ns.AddNamespace("enb", "http://alcatel-lucent.com/lte/enb");
            ns.AddNamespace(String.Empty, "http://alcatel-lucent.com/lte/enb");
 
-           readXMLDocWithFieldsToUpdate(root, ns, pathToPatch);
+           readXMLDocWithFieldsToUpdate(root, ns, pathToPatch, pathToPatchInter);
 
            updateXMLDoc(root, ns, pathToPatch, strUniqueName, strNodeBName);
 
@@ -361,7 +362,7 @@ namespace AluLabConf
 
         }
 
-        public static void readXMLDocWithFieldsToUpdate(XmlElement xmlDocument, XmlNamespaceManager ns, xPathToUpdate pathToPatch)
+        public static void readXMLDocWithFieldsToUpdate(XmlElement xmlDocument, XmlNamespaceManager ns, xPathToUpdate pathToPatch, xPathToUpdateInter pathToPatchInter)
         {
 
             if (log.IsInfoEnabled) log.Info("readXMLDocWithFieldsToUpdate : Début Fonction");
@@ -407,22 +408,22 @@ namespace AluLabConf
             }
             
             //INTER FREQ
-            readXpathValue(xmlDocument, ns, pathToPatch.mInterFreqPathMeasurementBandwidth);
+            readXpathValue(xmlDocument, ns, pathToPatchInter.mInterFreqPathMeasurementBandwidth);
 
             //INTER FREQ
-            foreach (String xPath in pathToPatch.mInterFreqLteNeighboringFreqConfDl)
+            foreach (String xPath in pathToPatchInter.mInterFreqLteNeighboringFreqConfDl)
             {
                 readXpathValue(xmlDocument, ns, xPath);
             }
 
             //INTER FREQ
-            readXpathNode(xmlDocument, ns, pathToPatch.LteNeighboringCellRelationSourcePath);
+            readXpathNode(xmlDocument, ns, pathToPatchInter.LteNeighboringCellRelationSourcePath);
             
             //INTER FREQ
-            readXpathValue(xmlDocument, ns, pathToPatch.mInterFreqDestPathMacroEnodeB);
+            readXpathValue(xmlDocument, ns, pathToPatchInter.mInterFreqDestPathMacroEnodeB);
             
             //INTER FREQ
-            readXpathValue(xmlDocument, ns, pathToPatch.mInterLteNeighboringCellRelationPci);
+            readXpathValue(xmlDocument, ns, pathToPatchInter.mInterLteNeighboringCellRelationPci);
 
             if (log.IsInfoEnabled) log.Info("readXMLDocWithFieldsToUpdate : FIn Fonction");
         }
@@ -612,7 +613,6 @@ namespace AluLabConf
             this.mPathMacroEnbId.Add("//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='2']/enb:LteNeighboring[enb:rdnId='0']/enb:LteNeighboringFreqConf[enb:rdnId='0']/enb:LteNeighboringCellRelation[enb:uniqueName='0']/enb:attributes/enb:macroEnbId");
             this.mPathMacroEnbId.Add("//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='2']/enb:LteNeighboring[enb:rdnId='0']/enb:LteNeighboringFreqConf[enb:rdnId='0']/enb:LteNeighboringCellRelation[enb:uniqueName='1']/enb:attributes/enb:macroEnbId");
 
-
             this.mPathiPvlan0 = "//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:EnbTransportConf[enb:rdnId='0']/enb:RanBackhaul[enb:rdnId='0']/enb:Vlan[enb:rdnId='0']/enb:TrafficDescriptor[enb:rdnId='0']/enb:attributes/enb:ipv4Address";
             this.mPathiPvlan1 = "//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:EnbTransportConf[enb:rdnId='0']/enb:RanBackhaul[enb:rdnId='0']/enb:Vlan[enb:rdnId='1']/enb:TrafficDescriptor[enb:rdnId='0']/enb:attributes/enb:ipv4Address";
 
@@ -649,13 +649,51 @@ namespace AluLabConf
             this.mPathUlFqn.Add("//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='1']/enb:FrequencyAndBandwidthFDD[enb:rdnId='0']/enb:attributes/enb:ulEARFCN");
             this.mPathUlFqn.Add("//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='2']/enb:FrequencyAndBandwidthFDD[enb:rdnId='0']/enb:attributes/enb:ulEARFCN");
 
+            if (log.IsInfoEnabled) log.Info("xPathToUpdate : Fin Constructeur");
+
+        }
+
+
+    }
+
+    public class xPathToUpdateInter
+    {
+
+        public static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
+        // INTER FREQ : Déclaration de la Variable de stockage du Unique name
+        public string mInterFreqPathMeasurementBandwidth { get; set; }
+
+        // INTER FREQ : Déclaration de la collection de stockage des chemins Xpath pour modifier les Frequances de UL
+        public List<string> mInterFreqLteNeighboringFreqConfDl { get; set; }
+
+        // INTER FREQ : XPatxh Node source to copy
+        public String LteNeighboringCellRelationSourcePath { get; set; }
+        // INTER FREQ : XPatxh Node dest where to copy
+        public String LteNeighboringCellRelationDestPath { get; set; }
+
+        // INTER FREQ : MacroEnodeB
+        public String mInterFreqDestPathMacroEnodeB { get; set; }
+
+        // INTER FREQ : Pci
+        public String mInterLteNeighboringCellRelationPci { get; set; }
+
+        public xPathToUpdateInter()
+        {
+
+            if (log.IsInfoEnabled) log.Info("xPathToUpdateInter : Début Constructeur");
+
             // INTER PATH
             this.mInterFreqPathMeasurementBandwidth = "//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='1']/enb:LteNeighboring[enb:rdnId='0']/enb:LteNeighboringFreqConf[enb:rdnId='1']/enb:attributes/enb:measurementBandwidth";
-            
+
             // INTER PATH
             this.mInterFreqLteNeighboringFreqConfDl = new List<String>();
+            this.mInterFreqLteNeighboringFreqConfDl.Add("//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='0']/enb:LteNeighboring[enb:rdnId='0']/enb:LteNeighboringFreqConf[enb:rdnId='1']/enb:attributes/enb:dlEARFCN");
             this.mInterFreqLteNeighboringFreqConfDl.Add("//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='1']/enb:LteNeighboring[enb:rdnId='0']/enb:LteNeighboringFreqConf[enb:rdnId='1']/enb:attributes/enb:dlEARFCN");
+            this.mInterFreqLteNeighboringFreqConfDl.Add("//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='2']/enb:LteNeighboring[enb:rdnId='0']/enb:LteNeighboringFreqConf[enb:rdnId='1']/enb:attributes/enb:dlEARFCN");
             this.mInterFreqLteNeighboringFreqConfDl.Add("//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='0']/enb:RrcMeasurementConf[enb:rdnId='0']/enb:MeasObject[enb:rdnId='0']/enb:MeasObjectEUTRA[enb:rdnId='0']/enb:attributes/enb:dlEARFCN");
+            this.mInterFreqLteNeighboringFreqConfDl.Add("//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='1']/enb:RrcMeasurementConf[enb:rdnId='0']/enb:MeasObject[enb:rdnId='0']/enb:MeasObjectEUTRA[enb:rdnId='0']/enb:attributes/enb:dlEARFCN");
+            this.mInterFreqLteNeighboringFreqConfDl.Add("//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='2']/enb:RrcMeasurementConf[enb:rdnId='0']/enb:MeasObject[enb:rdnId='0']/enb:MeasObjectEUTRA[enb:rdnId='0']/enb:attributes/enb:dlEARFCN");
 
             // INTER PATH
             this.LteNeighboringCellRelationSourcePath = "//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='1']/enb:LteNeighboring[enb:rdnId='0']/enb:LteNeighboringFreqConf[enb:rdnId='0']/enb:LteNeighboringCellRelation[enb:uniqueName='2']";
@@ -667,11 +705,10 @@ namespace AluLabConf
             // INTER PATH
             this.mInterLteNeighboringCellRelationPci = "//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='1']/enb:LteNeighboring[enb:rdnId='0']/enb:LteNeighboringFreqConf[enb:rdnId='1']/enb:LteNeighboringCellRelation[enb:uniqueName='2']/enb:attributes/enb:pci";
 
-            if (log.IsInfoEnabled) log.Info("xPathToUpdate : Fin Constructeur");
-
+            if (log.IsInfoEnabled) log.Info("xPathToUpdateInter : Fin Constructeur");
         }
 
-
     }
-    
+
+
 }

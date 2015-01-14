@@ -26,7 +26,7 @@ namespace AluLabConf
             if (!oCheckBoxIntraActivate.Checked)
             {
                 oIntraComboNodeB.Visible = false;
-                checkBox1.Visible = false;
+                oCheckBoxIntraX2.Visible = false;
                 oIntraTxtNodeB.Visible = false;
             }
 
@@ -48,8 +48,8 @@ namespace AluLabConf
         {
             
             Stream myStream = null;
-            OpenFileDialog openFileDialog1 = new OpenFileDialog();
 
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
 
             openFileDialog1.InitialDirectory = @"c:\";
             openFileDialog1.Filter = "xml files (*.xml)|*.xml|All files (*.*)|*.*";
@@ -69,6 +69,7 @@ namespace AluLabConf
                             if (log.IsDebugEnabled) log.Debug(string.Format("Source File  To Update : {0}", openFileDialog1.FileName));
                             //System.Console.WriteLine("Source File  To Update : {0}", openFileDialog1.FileName);
                         }
+
                         textBox1.Text = openFileDialog1.FileName;
                 
                     }
@@ -85,27 +86,26 @@ namespace AluLabConf
 
         private void ButtonGenerate(object sender, EventArgs e)
         {
-            if (log.IsDebugEnabled)
-            {
-                if (log.IsDebugEnabled) log.Debug("Lancement du parsing du fichier sélectionné");
-                //System.Console.WriteLine("Lancement du parsing du fichier sélectionné");
-            }
 
             if (!oInterRadio10.Checked && !oInterRadio5.Checked)
             {
+                log.Debug("Generation d'une DATABASE simple pour enodeB");
+            }
 
-            }
-            
-            if ((textBox1.Text != string.Empty))
-            {
-                textBox2.Text = Program.loadSampleFileToPatch(textBox1.Text, oParentComboNodeB.Text, oParentComboFreq.Text);
-            }
-            else
+            if (textBox1.Text == string.Empty)
             {
                 if (log.IsErrorEnabled) log.Error("Veuillez sélectionner un fichier XML à modifier");
                 MessageBox.Show("Veuillez sélectionner un fichier XML à modifier");
             }
-        
+            else if (oCheckBoxInterActivate.Checked && ((int)oParentComboFreq.SelectedValue == (int)oInterComboBandFreq.SelectedValue))
+            {
+                MessageBox.Show("La Bande de fréquence ne peut pas être identique sur le parent sur l'inter");
+            }
+            else
+            {
+                textBox2.Text = Program.loadSampleFileToPatch(textBox1.Text, oParentComboNodeB.Text, oParentComboFreq.Text);
+            }
+
         }
 
 
@@ -142,13 +142,13 @@ namespace AluLabConf
             if (!oCheckBoxIntraActivate.Checked)
             {
                 oIntraComboNodeB.Visible = false;
-                checkBox1.Visible = false;
+                oCheckBoxIntraX2.Visible = false;
                 oIntraTxtNodeB.Visible = false;
             }
             else
             {
                 oIntraComboNodeB.Visible = true;
-                checkBox1.Visible = true;
+                oCheckBoxIntraX2.Visible = true;
                 oIntraTxtNodeB.Visible = true;
             }
         }
@@ -184,10 +184,6 @@ namespace AluLabConf
 
         }
 
-       
-
-
-
 
         private void openFileDialog1_FileOk_1(object sender, CancelEventArgs e)
         {
@@ -203,10 +199,33 @@ namespace AluLabConf
 
         private void oParentComboFreq_SelectedIndexChanged(object sender, EventArgs e)
         {
+            MessageBox.Show("Daube N°1 !!!!!!!!!!!!!!!!!!!!");
+        }
+
+        private void oParentComboFreq_SelectedValueChanged(object sender, EventArgs e)
+        {
+            log.Debug(string.Format("Valeur du oParentComboFreq {0} ", oParentComboFreq.SelectedValue.ToString()));
+            log.Debug(string.Format("Valeur du oInterComboBandFreq {0} ", oInterComboBandFreq.SelectedValue.ToString()));
+
+            if (oCheckBoxInterActivate.Checked && ((int)oParentComboFreq.SelectedValue == (int)oInterComboBandFreq.SelectedValue))
+            {
+                log.Debug(string.Format("oCheckBoxInterActivate.Checked = TRUE", oCheckBoxInterActivate.Checked));
+                MessageBox.Show("La Bande de fréquence ne peut pas être identique sur le parent sur l'inter");
+            }
+            else
+            {
+                log.Debug(string.Format("oCheckBoxInterActivate.Checked = FALSE"));
+            }
 
         }
 
+
         private void labAluBindingSource_CurrentChanged_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void checkBox1_CheckedChanged_1(object sender, EventArgs e)
         {
 
         }
