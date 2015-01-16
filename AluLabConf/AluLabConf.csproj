@@ -68,6 +68,8 @@
     <Compile Include="AluLabConf.Designer.cs">
       <DependentUpon>AluLabConf.cs</DependentUpon>
     </Compile>
+    <Compile Include="xPathDataModel.cs" />
+    <Compile Include="DataModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="AluLabConf.resx">

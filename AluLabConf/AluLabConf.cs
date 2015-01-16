@@ -14,19 +14,26 @@ using log4net;
 namespace AluLabConf
 {
 
+
     public partial class AluLabConfForm : Form
     {
 
         private static readonly log4net.ILog log = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+        private static cUserInput userInput;
+        
         public AluLabConfForm()
         {
+                       
             InitializeComponent();
 
+            userInput = new cUserInput();
+            
             if (!oCheckBoxIntraActivate.Checked)
             {
                 oIntraComboNodeB.Visible = false;
                 oCheckBoxIntraX2.Visible = false;
+                oCheckBoxIntraS1.Visible = false;
                 oIntraTxtNodeB.Visible = false;
             }
 
@@ -67,7 +74,6 @@ namespace AluLabConf
                         if (log.IsDebugEnabled)
                         {
                             if (log.IsDebugEnabled) log.Debug(string.Format("Source File  To Update : {0}", openFileDialog1.FileName));
-                            //System.Console.WriteLine("Source File  To Update : {0}", openFileDialog1.FileName);
                         }
 
                         textBox1.Text = openFileDialog1.FileName;
@@ -81,16 +87,10 @@ namespace AluLabConf
                 }
             }
 
-
         }
 
         private void ButtonGenerate(object sender, EventArgs e)
         {
-
-            if (!oInterRadio10.Checked && !oInterRadio5.Checked)
-            {
-                log.Debug("Generation d'une DATABASE simple pour enodeB");
-            }
 
             if (textBox1.Text == string.Empty)
             {
@@ -101,9 +101,77 @@ namespace AluLabConf
             {
                 MessageBox.Show("La Bande de fréquence ne peut pas être identique sur le parent sur l'inter");
             }
+            else if (oCheckBoxInterActivate.Checked && (!oInterRadio10.Checked && !oInterRadio5.Checked))
+            {
+                log.Debug("Mode Inter : Veuillez sélectionner 5Mhz ou 10Mhz");
+                MessageBox.Show("Veuillez sélectionner 5Mhz ou 10Mhz");
+            }
             else
             {
-                textBox2.Text = Program.loadSampleFileToPatch(textBox1.Text, oParentComboNodeB.Text, oParentComboFreq.Text);
+                /// remplissage de la structure du DataModel avec les données du parent
+                userInput.xmlSourceFileName = textBox1.Text;
+                userInput.selectedParentNodeB = oParentComboNodeB.SelectedValue.ToString();
+                userInput.selectedParentBandeFreq = oParentComboFreq.SelectedValue.ToString();
+
+                /// remplissage de la structure du DataModel avec les données du mode inter
+                if (!oCheckBoxInterActivate.Checked)
+                {
+                    log.Debug("Mode Inter non sélectionné");
+                } 
+                else
+                {
+                    log.Debug("Mode Inter sélectionné");
+
+                    userInput.selectedInter.interActivated = true;
+                    userInput.selectedInter.selectedInterBandFreq = oInterComboBandFreq.Text;
+                    userInput.selectedInter.selectedInterEnodeB = oInterComboNodeB.Text;
+
+                    if (oInterRadio10.Checked)
+                    {
+                        userInput.selectedInter.shortbandWidth = 10;
+                    }
+                    else 
+                    {
+                        userInput.selectedInter.shortbandWidth = 5;
+                    }
+
+                    if (oCheckBoxInterS1.Checked)
+                    {
+                        userInput.selectedInter.bS1 = true;
+                    }
+
+                    if (oCheckBoxInterX2.Checked)
+                    {
+                        userInput.selectedInter.bX2 = true;
+                    }
+                }
+
+                /// remplissage de la structure du DataModel avec les données du mode intra
+
+                if (!oCheckBoxIntraActivate.Checked)
+                {
+                    log.Debug("Mode Intra non sélectionné");
+                }
+                else
+                {
+                    userInput.selectedIntra.intraActivated= true;
+                    userInput.selectedIntra.selectedIntraEnodeB = oIntraComboNodeB.Text;
+
+                    if (oCheckBoxIntraS1.Checked)
+                    {
+                        userInput.selectedIntra.bS1 = true;
+                    }
+
+                    if (oCheckBoxIntraX2.Checked)
+                    {
+                        userInput.selectedIntra.bX2 = true;
+                    }
+                }
+
+
+                //textBox2.Text = Program.loadSampleFileToPatch(textBox1.Text, oParentComboNodeB.Text, oParentComboFreq.Text);
+                Program.FctTest(userInput);
+            
             }
 
         }
@@ -143,12 +211,14 @@ namespace AluLabConf
             {
                 oIntraComboNodeB.Visible = false;
                 oCheckBoxIntraX2.Visible = false;
+                oCheckBoxIntraS1.Visible = false;
                 oIntraTxtNodeB.Visible = false;
             }
             else
             {
                 oIntraComboNodeB.Visible = true;
                 oCheckBoxIntraX2.Visible = true;
+                oCheckBoxIntraS1.Visible = true;
                 oIntraTxtNodeB.Visible = true;
             }
         }

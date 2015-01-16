@@ -18,111 +18,17 @@ namespace AluLabConf
     /// <summary>
     /// déclaration des classes privées
     /// </summary>
-    
-    public class ConfigData
-    {
-        public String loggerCfgFile {get; set;}
-        public String labAluCfgFile { get; set; }
-
-        public ConfigData()
-        {
-            this.loggerCfgFile = @"C:\romelia\log4net-cfg.xml";
-            this.labAluCfgFile = @"C:\romelia\lab_conf.xml";
-        }
-    }
-        
-    public class BandFreq
-    {
-        public int BandName {get; set;}
-        public int DownloadFreq { get; set; }
-        public int UploadFreq { get; set; }
-    }
-
-    public class EnodeB
-    {
-        public long MacroEnb { get; set; }
-        public int iDenodeB { get; set; }
-        public int pCi1 { get; set; }
-        public int pCi2 { get; set; }
-        public int pCi3 { get; set; }
-        public string iPvlan0 { get; set; }
-        public string iPvlan1 { get; set; }
-        public string uNiquename { get; set; }
-        public string eNodeBname { get; set; }
-        public string hOmeEnodeBname { get; set; }
-    }
-
-    public class interNeighboring
-    {
-        private Boolean bX2 { get; set; }
-        private Boolean bS1 { get; set; }
-        private EnodeB structInterEnodeB { get; set; }
-        private BandFreq structInterBandFreq { get; set; }
-        private short shortbandWidth { get; set; }
-    }
-
-    public class intraNeighboring
-    {
-        private Boolean bX2 { get; set; }
-        private Boolean bS1 { get; set; }
-        private EnodeB structInterEnodeB { get; set; }
-        private BandFreq structInterBandFreq { get; set; }
-        private short shortbandWidth { get; set; }
-    }
-
-    public class parentNodeName
-    {
-        public EnodeB cEnodeB { get; set; }
-        public BandFreq cBandFreq { get; set; }
-
-        public parentNodeName ()
-        {
-            this.cEnodeB = new EnodeB();
-            this.cBandFreq = new BandFreq();
-        }
-    } 
-
-    /// <summary>
-    /// déclaration des classes publiques
-    /// </summary>
-   
-
-    public class LabAlu
-    {
-        public List<BandFreq> BandFreqDuLab;
-        public List<int> iDBandFreqDuLab;
-        public List<EnodeB> EnodebDuLab;
-        public List<int> iDEnodebDuLab;
-        
-        public LabAlu ()
-        {
-            this.BandFreqDuLab = new List<BandFreq>();
-            this.iDBandFreqDuLab = new List<int>(0);
-            this.EnodebDuLab = new List<EnodeB>();
-            this.iDEnodebDuLab = new List<int>(0);
-        }
-    }
-
-    public class cUserInput
-    {
-        public string xmlSourceFileName { get; set; }
-        public parentNodeName selectedParentNodeName { get; set; }
-
-        public cUserInput ()
-        {
-            this.selectedParentNodeName = new parentNodeName();
-        }
-    }
-
+ 
     static class Program
     {
         /// <summary>
         /// Point d'entrée principal de l'application.
         /// </summary>
         static LabAlu readAluLab = new LabAlu();
-        static cUserInput userInput = new cUserInput();
+        public static cUserInput userInput = new cUserInput();
         public static readonly ConfigData Conf = new ConfigData();
         public static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        
 
         [STAThread]
 
@@ -160,7 +66,6 @@ namespace AluLabConf
             Application.Run(myform);
 
             System.Console.ReadLine();
-
             if (log.IsInfoEnabled) log.Info("Main : Fin Fonction");        
         }
 
@@ -251,6 +156,21 @@ namespace AluLabConf
 
         }
 
+        public static void FctTest(cUserInput UserInputContext)
+        {
+            if (log.IsInfoEnabled) log.Info("FctTest : Début Fonction !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+
+            userInput = UserInputContext;
+
+            log.Debug(String.Format("userInput.xmlSourceFileName {0}", userInput.xmlSourceFileName));
+            log.Debug(String.Format("userInput.selectedParentNodeB {0}", userInput.selectedParentNodeB));
+            log.Debug(String.Format("userInput.selectedParentBandeFreq {0}", userInput.selectedParentBandeFreq));
+            log.Debug(String.Format("userInput.selectedIntra.intraActivated {0} ", userInput.selectedIntra.intraActivated.ToString()));
+            log.Debug(String.Format("userInput.selectedInter.interActivated {0} ", userInput.selectedInter.interActivated.ToString()));
+
+        }
+
+
         public static String loadSampleFileToPatch(String fileName, String enodebName, String bandFreq)
         {
             if (log.IsInfoEnabled) log.Info("loadSampleFileToPatch : Début Fonction");
@@ -260,10 +180,12 @@ namespace AluLabConf
                 log.Debug(String.Format("loadSampleFileToPatch:Fichier sélecionné {0} ", fileName));
                 log.Debug(String.Format("loadSampleFileToPatch:enodebName sélecionné {0} ", enodebName));
                 log.Debug(String.Format("loadSampleFileToPatch:bandFreq sélecionné {0} ", bandFreq));
+
             }
 
             xPathToUpdate pathToPatch = new xPathToUpdate();
             xPathToUpdateInter pathToPatchInter = new xPathToUpdateInter();
+            xPathToUpdateIntra pathToPatchIntra = new xPathToUpdateIntra();
 
             userInput.xmlSourceFileName = fileName;
             BandFreq selectedBandeFreq = new BandFreq();
@@ -290,11 +212,23 @@ namespace AluLabConf
            ns.AddNamespace("enb", "http://alcatel-lucent.com/lte/enb");
            ns.AddNamespace(String.Empty, "http://alcatel-lucent.com/lte/enb");
 
-           readXMLDocWithFieldsToUpdate(root, ns, pathToPatch, pathToPatchInter);
-
+            //Lecture des valeurs à modifier au niveau du parent
+           readXMLDocWithFieldsToUpdate(root, ns, pathToPatch);
+           // Update du document XML pour le parent
            updateXMLDoc(root, ns, pathToPatch, strUniqueName, strNodeBName);
 
-           string savingFileName = @FolderName + @"\" + strUniqueName + ".xml";
+
+            // Lecture des valeurs à modifier au niveau de l'inter
+           readXMLDocWithInterFieldsToUpdate(root, ns, pathToPatchInter);
+           // Update du document XML pour l'inter
+           updateXMLDocInterFreq(root, ns, pathToPatchInter);
+
+            //lecture des valeurs à modifier au niveau de l'intra
+           readXMLDocWithIntraFieldsToUpdate(root, ns, pathToPatchIntra);
+           // Update du document XML pour l'intra
+           updateXMLDocIntraFreq(root, ns, pathToPatchIntra);
+
+            string savingFileName = @FolderName + @"\" + strUniqueName + ".xml";
 
            if (log.IsDebugEnabled) log.Debug(string.Format("loadSampleFileToPatch : Ecriture du fichier résultat dans {0}", savingFileName));
            
@@ -330,7 +264,7 @@ namespace AluLabConf
             }
             else
             {
-                if (log.IsErrorEnabled) log.Error(string.Format("findSelectedBandFreqInLab : Erreur de conversion string bandFred en Int"));
+                if (log.IsErrorEnabled) log.Error(string.Format("findSelectedBandFreqInLab : Erreur de conversion string bandFreq en Int"));
             }
 
         }
@@ -363,7 +297,7 @@ namespace AluLabConf
 
         }
 
-        public static void readXMLDocWithFieldsToUpdate(XmlElement xmlDocument, XmlNamespaceManager ns, xPathToUpdate pathToPatch, xPathToUpdateInter pathToPatchInter)
+        public static void readXMLDocWithFieldsToUpdate(XmlElement xmlDocument, XmlNamespaceManager ns, xPathToUpdate pathToPatch)
         {
 
             if (log.IsInfoEnabled) log.Info("readXMLDocWithFieldsToUpdate : Début Fonction");
@@ -408,6 +342,14 @@ namespace AluLabConf
                 readXpathValue(xmlDocument, ns, xPath);
             }
             
+            if (log.IsInfoEnabled) log.Info("readXMLDocWithFieldsToUpdate : FIn Fonction");
+        }
+
+
+        public static void readXMLDocWithInterFieldsToUpdate(XmlElement xmlDocument, XmlNamespaceManager ns, xPathToUpdateInter pathToPatchInter)
+        {
+            if (log.IsInfoEnabled) log.Info("readXMLDocWithInterFieldsToUpdate : FIn Fonction");
+            
             //INTER FREQ
             readXpathValue(xmlDocument, ns, pathToPatchInter.mInterFreqPathMeasurementBandwidth);
 
@@ -419,16 +361,23 @@ namespace AluLabConf
 
             //INTER FREQ
             readXpathNode(xmlDocument, ns, pathToPatchInter.LteNeighboringCellRelationSourcePath);
-            
+
             //INTER FREQ
             readXpathValue(xmlDocument, ns, pathToPatchInter.mInterFreqDestPathMacroEnodeB);
-            
+
             //INTER FREQ
             readXpathValue(xmlDocument, ns, pathToPatchInter.mInterLteNeighboringCellRelationPci);
 
-            if (log.IsInfoEnabled) log.Info("readXMLDocWithFieldsToUpdate : FIn Fonction");
+            if (log.IsInfoEnabled) log.Info("readXMLDocWithInterFieldsToUpdate : FIn Fonction");
+
         }
 
+        public static void readXMLDocWithIntraFieldsToUpdate(XmlElement xmlDocument, XmlNamespaceManager ns, xPathToUpdateIntra pathToPatchIntra)
+        {
+            if (log.IsInfoEnabled) log.Info("readXMLDocWithIntraFieldsToUpdate : Début Fonction");
+            if (log.IsInfoEnabled) log.Info("readXMLDocWithIntraFieldsToUpdate : A CODER ........");
+            if (log.IsInfoEnabled) log.Info("readXMLDocWithIntraFieldsToUpdate : FIn Fonction");
+        }
 
 
         public static void updateXMLDoc(XmlElement xmlDocument, XmlNamespaceManager ns, xPathToUpdate pathToPatch, String strUniqueName, String strNodeBName)
@@ -477,6 +426,28 @@ namespace AluLabConf
             }
 
             if (log.IsInfoEnabled) log.Info("updateXMLDoc : Fin Fonction");
+
+        }
+
+
+        public static void updateXMLDocInterFreq(XmlElement xmlDocument, XmlNamespaceManager ns, xPathToUpdateInter pathToPatchInter)
+        {
+            if (log.IsInfoEnabled) log.Info("updateXMLDocInterFreq : Début Fonction");
+
+            if (log.IsInfoEnabled) log.Info("updateXMLDocIntraFreq A CODER !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+
+            if (log.IsInfoEnabled) log.Info("updateXMLDocInterFreq : Fin Fonction");
+
+        }
+
+
+        public static void updateXMLDocIntraFreq(XmlElement xmlDocument, XmlNamespaceManager ns, xPathToUpdateIntra pathToPatchIntra)
+        {
+            if (log.IsInfoEnabled) log.Info("updateXMLDocIntraFreq : Début Fonction");
+
+            if (log.IsInfoEnabled) log.Info("updateXMLDocIntraFreq A CODER !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+
+            if (log.IsInfoEnabled) log.Info("updateXMLDocIntraFreq : Fin Fonction");
 
         }
 
@@ -539,177 +510,7 @@ namespace AluLabConf
     }
 
 
-    public class xPathToUpdate
-    {  
-        /// <summary>
-        /// Classe de gestion des chemins xPath à mettre à jour
-        /// </summary>
-
-        public static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        
-        /// PARENT : Déclaration de la Variable de stockage du Unique name
-        public string mPathUniqueName { get; set; }
-
-        // PARENT : Déclaration de la Variable de stockage du Unique name
-        public List<string> mEnodebName { get; set; }
-
-        // PARENT : Déclaration de la collection de stockage des chemins Xpath du MacroEnbId
-        public List<string> mPathMacroEnbId { get; set; }
-
-        // PARENT : Déclaration de la collection de stockage des chemins Xpath pour modifier les IPV4
-        public string mPathiPvlan0 { get; set; }
-        public string mPathiPvlan1 { get; set; }
-
-        // PARENT : Déclaration de la collection de stockage des chemins Xpath pour modifier le PCI1
-        public List<string> mPathPci1 { get; set; }
-
-        // PARENT : Déclaration de la collection de stockage des chemins Xpath pour modifier le PCI2
-        public List<string> mPathPci2 { get; set; }
-
-        // PARENT : Déclaration de la collection de stockage des chemins Xpath pour modifier le PCI3
-        public List<string> mPathPci3 { get; set; }
-
-        // PARENT : Déclaration de la collection de stockage des chemins Xpath pour modifier les Frequances de DL
-        public List<string> mPathDlFqn { get; set; }
-
-        // PARENT : Déclaration de la collection de stockage des chemins Xpath pour modifier les Frequances de UL
-        public List<string> mPathUlFqn { get; set; }
-
-        // INTER FREQ : Déclaration de la Variable de stockage du Unique name
-        public string mInterFreqPathMeasurementBandwidth { get; set; }
-
-        // INTER FREQ : Déclaration de la collection de stockage des chemins Xpath pour modifier les Frequances de UL
-        public List<string> mInterFreqLteNeighboringFreqConfDl { get; set; }
-        
-        // INTER FREQ : XPatxh Node source to copy
-        public String LteNeighboringCellRelationSourcePath { get; set; }
-        // INTER FREQ : XPatxh Node dest where to copy
-        public String LteNeighboringCellRelationDestPath { get; set; }
-
-        // INTER FREQ : MacroEnodeB
-        public String mInterFreqDestPathMacroEnodeB { get; set; }
-
-        // INTER FREQ : Pci
-        public String mInterLteNeighboringCellRelationPci { get; set; }
-
-
-        public xPathToUpdate()
-        {
-
-            if (log.IsInfoEnabled) log.Info("xPathToUpdate : Début Constructeur");
-
-            // PARENT PATH
-            this.mPathUniqueName = "//conf:config/enb:ENBEquipment/enb:attributes/enb:uniqueName";
-
-            this.mEnodebName = new List<String>();
-            this.mEnodebName.Add("//conf:config/enb:ENBEquipment/enb:Enb/enb:attributes/enb:eNBname");
-            this.mEnodebName.Add("//conf:config/enb:ENBEquipment/enb:Enb/enb:attributes/enb:homeEnbName");
-
-            this.mPathMacroEnbId = new List<String>();
-            this.mPathMacroEnbId.Add("//conf:config/enb:ENBEquipment/enb:Enb/enb:attributes/enb:macroEnbId");
-            this.mPathMacroEnbId.Add("//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='0']/enb:LteNeighboring[enb:rdnId='0']/enb:LteNeighboringFreqConf[enb:rdnId='0']/enb:LteNeighboringCellRelation[enb:uniqueName='1']/enb:attributes/enb:macroEnbId");
-            this.mPathMacroEnbId.Add("//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='0']/enb:LteNeighboring[enb:rdnId='0']/enb:LteNeighboringFreqConf[enb:rdnId='0']/enb:LteNeighboringCellRelation[enb:uniqueName='2']/enb:attributes/enb:macroEnbId");
-            this.mPathMacroEnbId.Add("//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='1']/enb:LteNeighboring[enb:rdnId='0']/enb:LteNeighboringFreqConf[enb:rdnId='0']/enb:LteNeighboringCellRelation[enb:uniqueName='0']/enb:attributes/enb:macroEnbId");
-            this.mPathMacroEnbId.Add("//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='1']/enb:LteNeighboring[enb:rdnId='0']/enb:LteNeighboringFreqConf[enb:rdnId='0']/enb:LteNeighboringCellRelation[enb:uniqueName='2']/enb:attributes/enb:macroEnbId");
-            this.mPathMacroEnbId.Add("//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='2']/enb:LteNeighboring[enb:rdnId='0']/enb:LteNeighboringFreqConf[enb:rdnId='0']/enb:LteNeighboringCellRelation[enb:uniqueName='0']/enb:attributes/enb:macroEnbId");
-            this.mPathMacroEnbId.Add("//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='2']/enb:LteNeighboring[enb:rdnId='0']/enb:LteNeighboringFreqConf[enb:rdnId='0']/enb:LteNeighboringCellRelation[enb:uniqueName='1']/enb:attributes/enb:macroEnbId");
-
-            this.mPathiPvlan0 = "//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:EnbTransportConf[enb:rdnId='0']/enb:RanBackhaul[enb:rdnId='0']/enb:Vlan[enb:rdnId='0']/enb:TrafficDescriptor[enb:rdnId='0']/enb:attributes/enb:ipv4Address";
-            this.mPathiPvlan1 = "//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:EnbTransportConf[enb:rdnId='0']/enb:RanBackhaul[enb:rdnId='0']/enb:Vlan[enb:rdnId='1']/enb:TrafficDescriptor[enb:rdnId='0']/enb:attributes/enb:ipv4Address";
-
-            this.mPathPci1 = new List<String>();
-            this.mPathPci1.Add("//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='0']/enb:attributes/enb:pci");
-            this.mPathPci1.Add("//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='1']/enb:LteNeighboring[enb:rdnId='0']/enb:LteNeighboringFreqConf[enb:rdnId='0']/enb:LteNeighboringCellRelation[enb:uniqueName='0']/enb:attributes/enb:pci");
-            this.mPathPci1.Add("//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='2']/enb:LteNeighboring[enb:rdnId='0']/enb:LteNeighboringFreqConf[enb:rdnId='0']/enb:LteNeighboringCellRelation[enb:uniqueName='0']/enb:attributes/enb:pci");
-
-            this.mPathPci2 = new List<String>();
-            this.mPathPci2.Add("//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='1']/enb:attributes/enb:pci");
-            this.mPathPci2.Add("//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='0']/enb:LteNeighboring[enb:rdnId='0']/enb:LteNeighboringFreqConf[enb:rdnId='0']/enb:LteNeighboringCellRelation[enb:uniqueName='1']/enb:attributes/enb:pci");
-            this.mPathPci2.Add("//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='2']/enb:LteNeighboring[enb:rdnId='0']/enb:LteNeighboringFreqConf[enb:rdnId='0']/enb:LteNeighboringCellRelation[enb:uniqueName='1']/enb:attributes/enb:pci");
-            
-            this.mPathPci3 = new List<String>();
-            this.mPathPci3.Add("//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='2']/enb:attributes/enb:pci");
-            this.mPathPci3.Add("//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='0']/enb:LteNeighboring[enb:rdnId='0']/enb:LteNeighboringFreqConf[enb:rdnId='0']/enb:LteNeighboringCellRelation[enb:uniqueName='2']/enb:attributes/enb:pci");
-            this.mPathPci3.Add("//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='1']/enb:LteNeighboring[enb:rdnId='0']/enb:LteNeighboringFreqConf[enb:rdnId='0']/enb:LteNeighboringCellRelation[enb:uniqueName='2']/enb:attributes/enb:pci");
-
-            this.mPathDlFqn = new List<String>();
-            this.mPathDlFqn.Add("//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='0']/enb:FrequencyAndBandwidthFDD[enb:rdnId='0']/enb:attributes/enb:dlEARFCN");
-            this.mPathDlFqn.Add("//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='1']/enb:FrequencyAndBandwidthFDD[enb:rdnId='0']/enb:attributes/enb:dlEARFCN");
-            this.mPathDlFqn.Add("//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='2']/enb:FrequencyAndBandwidthFDD[enb:rdnId='0']/enb:attributes/enb:dlEARFCN");
-
-            this.mPathDlFqn.Add("//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='0']/enb:RrcMeasurementConf[enb:rdnId='0']/enb:MeasObject[enb:rdnId='0']/enb:MeasObjectEUTRA[enb:rdnId='0']/enb:attributes/enb:dlEARFCN");
-            this.mPathDlFqn.Add("//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='1']/enb:RrcMeasurementConf[enb:rdnId='0']/enb:MeasObject[enb:rdnId='0']/enb:MeasObjectEUTRA[enb:rdnId='0']/enb:attributes/enb:dlEARFCN");
-            this.mPathDlFqn.Add("//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='2']/enb:RrcMeasurementConf[enb:rdnId='0']/enb:MeasObject[enb:rdnId='0']/enb:MeasObjectEUTRA[enb:rdnId='0']/enb:attributes/enb:dlEARFCN");
-
-            this.mPathDlFqn.Add("//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='0']/enb:LteNeighboring[enb:rdnId='0']/enb:LteNeighboringFreqConf[enb:rdnId='0']/enb:attributes/enb:dlEARFCN");
-            this.mPathDlFqn.Add("//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='1']/enb:LteNeighboring[enb:rdnId='0']/enb:LteNeighboringFreqConf[enb:rdnId='0']/enb:attributes/enb:dlEARFCN");
-            this.mPathDlFqn.Add("//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='2']/enb:LteNeighboring[enb:rdnId='0']/enb:LteNeighboringFreqConf[enb:rdnId='0']/enb:attributes/enb:dlEARFCN");
-
-            this.mPathUlFqn = new List<String>();
-            this.mPathUlFqn.Add("//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='0']/enb:FrequencyAndBandwidthFDD[enb:rdnId='0']/enb:attributes/enb:ulEARFCN");
-            this.mPathUlFqn.Add("//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='1']/enb:FrequencyAndBandwidthFDD[enb:rdnId='0']/enb:attributes/enb:ulEARFCN");
-            this.mPathUlFqn.Add("//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='2']/enb:FrequencyAndBandwidthFDD[enb:rdnId='0']/enb:attributes/enb:ulEARFCN");
-
-            if (log.IsInfoEnabled) log.Info("xPathToUpdate : Fin Constructeur");
-
-        }
-
-
-    }
-
-    public class xPathToUpdateInter
-    {
-
-        public static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
-        // INTER FREQ : Déclaration de la Variable de stockage du Unique name
-        public string mInterFreqPathMeasurementBandwidth { get; set; }
-
-        // INTER FREQ : Déclaration de la collection de stockage des chemins Xpath pour modifier les Frequances de UL
-        public List<string> mInterFreqLteNeighboringFreqConfDl { get; set; }
-
-        // INTER FREQ : XPatxh Node source to copy
-        public String LteNeighboringCellRelationSourcePath { get; set; }
-        // INTER FREQ : XPatxh Node dest where to copy
-        public String LteNeighboringCellRelationDestPath { get; set; }
-
-        // INTER FREQ : MacroEnodeB
-        public String mInterFreqDestPathMacroEnodeB { get; set; }
-
-        // INTER FREQ : Pci
-        public String mInterLteNeighboringCellRelationPci { get; set; }
-
-        public xPathToUpdateInter()
-        {
-
-            if (log.IsInfoEnabled) log.Info("xPathToUpdateInter : Début Constructeur");
-
-            // INTER PATH
-            this.mInterFreqPathMeasurementBandwidth = "//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='1']/enb:LteNeighboring[enb:rdnId='0']/enb:LteNeighboringFreqConf[enb:rdnId='1']/enb:attributes/enb:measurementBandwidth";
-
-            // INTER PATH
-            this.mInterFreqLteNeighboringFreqConfDl = new List<String>();
-            this.mInterFreqLteNeighboringFreqConfDl.Add("//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='0']/enb:LteNeighboring[enb:rdnId='0']/enb:LteNeighboringFreqConf[enb:rdnId='1']/enb:attributes/enb:dlEARFCN");
-            this.mInterFreqLteNeighboringFreqConfDl.Add("//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='1']/enb:LteNeighboring[enb:rdnId='0']/enb:LteNeighboringFreqConf[enb:rdnId='1']/enb:attributes/enb:dlEARFCN");
-            this.mInterFreqLteNeighboringFreqConfDl.Add("//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='2']/enb:LteNeighboring[enb:rdnId='0']/enb:LteNeighboringFreqConf[enb:rdnId='1']/enb:attributes/enb:dlEARFCN");
-            this.mInterFreqLteNeighboringFreqConfDl.Add("//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='0']/enb:RrcMeasurementConf[enb:rdnId='0']/enb:MeasObject[enb:rdnId='0']/enb:MeasObjectEUTRA[enb:rdnId='0']/enb:attributes/enb:dlEARFCN");
-            this.mInterFreqLteNeighboringFreqConfDl.Add("//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='1']/enb:RrcMeasurementConf[enb:rdnId='0']/enb:MeasObject[enb:rdnId='0']/enb:MeasObjectEUTRA[enb:rdnId='0']/enb:attributes/enb:dlEARFCN");
-            this.mInterFreqLteNeighboringFreqConfDl.Add("//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='2']/enb:RrcMeasurementConf[enb:rdnId='0']/enb:MeasObject[enb:rdnId='0']/enb:MeasObjectEUTRA[enb:rdnId='0']/enb:attributes/enb:dlEARFCN");
-
-            // INTER PATH
-            this.LteNeighboringCellRelationSourcePath = "//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='1']/enb:LteNeighboring[enb:rdnId='0']/enb:LteNeighboringFreqConf[enb:rdnId='0']/enb:LteNeighboringCellRelation[enb:uniqueName='2']";
-            this.LteNeighboringCellRelationDestPath = "//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='1']/enb:LteNeighboring[enb:rdnId='0']/enb:LteNeighboringFreqConf[enb:rdnId='1']/enb:LteNeighboringCellRelation[enb:uniqueName='2']";
-
-            // INTER PATH
-            this.mInterFreqDestPathMacroEnodeB = "//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='1']/enb:LteNeighboring[enb:rdnId='0']/enb:LteNeighboringFreqConf[enb:rdnId='1']/enb:LteNeighboringCellRelation[enb:uniqueName='2']/enb:attributes/enb:macroEnbId";
-
-            // INTER PATH
-            this.mInterLteNeighboringCellRelationPci = "//conf:config/enb:ENBEquipment/enb:Enb[enb:rdnId='0']/enb:LteCell[enb:uniqueName='1']/enb:LteNeighboring[enb:rdnId='0']/enb:LteNeighboringFreqConf[enb:rdnId='1']/enb:LteNeighboringCellRelation[enb:uniqueName='2']/enb:attributes/enb:pci";
-
-            if (log.IsInfoEnabled) log.Info("xPathToUpdateInter : Fin Constructeur");
-        }
-
-    }
+   
 
 
 }

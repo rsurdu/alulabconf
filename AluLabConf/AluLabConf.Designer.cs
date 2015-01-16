@@ -53,6 +53,7 @@
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.oButton2 = new System.Windows.Forms.Button();
             this.textBox2 = new System.Windows.Forms.TextBox();
+            this.oCheckBoxIntraS1 = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.labAluBindingSource)).BeginInit();
             this.oGroupBoxIntra.SuspendLayout();
             this.oInterGroupBox.SuspendLayout();
@@ -102,6 +103,7 @@
             // 
             // oGroupBoxIntra
             // 
+            this.oGroupBoxIntra.Controls.Add(this.oCheckBoxIntraS1);
             this.oGroupBoxIntra.Controls.Add(this.oIntraComboNodeB);
             this.oGroupBoxIntra.Controls.Add(this.oCheckBoxIntraActivate);
             this.oGroupBoxIntra.Controls.Add(this.oCheckBoxIntraX2);
@@ -297,6 +299,16 @@
             this.textBox2.Size = new System.Drawing.Size(511, 20);
             this.textBox2.TabIndex = 9;
             // 
+            // oCheckBoxIntraS1
+            // 
+            this.oCheckBoxIntraS1.AutoSize = true;
+            this.oCheckBoxIntraS1.Location = new System.Drawing.Point(54, 111);
+            this.oCheckBoxIntraS1.Name = "oCheckBoxIntraS1";
+            this.oCheckBoxIntraS1.Size = new System.Drawing.Size(39, 17);
+            this.oCheckBoxIntraS1.TabIndex = 15;
+            this.oCheckBoxIntraS1.Text = "S1";
+            this.oCheckBoxIntraS1.UseVisualStyleBackColor = true;
+            // 
             // AluLabConfForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -352,6 +364,7 @@
         private System.Windows.Forms.CheckBox oCheckBoxInterActivate;
         public System.Windows.Forms.ComboBox oIntraComboNodeB;
         public System.Windows.Forms.ComboBox oInterComboBandFreq;
+        private System.Windows.Forms.CheckBox oCheckBoxIntraS1;
     }
 }
 
