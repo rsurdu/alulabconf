@@ -167,19 +167,39 @@ namespace AluLabConf
             log.Debug(String.Format("userInput.selectedParentBandeFreq {0}", userInput.selectedParentBandeFreq));
             log.Debug(String.Format("userInput.selectedIntra.intraActivated {0} ", userInput.selectedIntra.intraActivated.ToString()));
             log.Debug(String.Format("userInput.selectedInter.interActivated {0} ", userInput.selectedInter.interActivated.ToString()));
+            log.Debug(String.Format("userInput.selectedInter.structInterEnodeB {0} ", userInput.selectedInter.selectedInterEnodeB));
+            log.Debug(String.Format("userInput.selectedInter.structInterEnodeB {0} ", userInput.selectedInter.selectedInterBandFreq));
 
+            log.Debug(String.Format("Contenu de l'Objet enodeB sélectionné par le client"));
+            log.Debug(String.Format("userInput.selectedInter.structInterEnodeB {0} ", userInput.selectedInter.structInterEnodeB.iDenodeB.ToString()));
+            log.Debug(String.Format("userInput.selectedInter.structInterEnodeB {0} ", userInput.selectedInter.structInterEnodeB.iPvlan0));
+            log.Debug(String.Format("userInput.selectedInter.structInterEnodeB {0} ", userInput.selectedInter.structInterEnodeB.iPvlan1));
+            log.Debug(String.Format("userInput.selectedInter.structInterEnodeB {0} ", userInput.selectedInter.structInterEnodeB.MacroEnb.ToString()));
+            log.Debug(String.Format("userInput.selectedInter.structInterEnodeB {0} ", userInput.selectedInter.structInterEnodeB.pCi1.ToString()));
+            log.Debug(String.Format("userInput.selectedInter.structInterEnodeB {0} ", userInput.selectedInter.structInterEnodeB.pCi2.ToString()));
+            log.Debug(String.Format("userInput.selectedInter.structInterEnodeB {0} ", userInput.selectedInter.structInterEnodeB.pCi3.ToString()));
+
+            log.Debug(String.Format("Contenu de l'Objet BandeFreq sélectionné par le client"));
+            log.Debug(String.Format("userInput.selectedInter.structInterBandFreq.BandName {0} ", userInput.selectedInter.structInterBandFreq.BandName.ToString()));
+            log.Debug(String.Format("userInput.selectedInter.structInterEnodeB {0} ", userInput.selectedInter.structInterBandFreq.DownloadFreq.ToString()));
+            log.Debug(String.Format("userInput.selectedInter.structInterEnodeB {0} ", userInput.selectedInter.structInterBandFreq.UploadFreq.ToString()));
+
+        
         }
 
 
-        public static String loadSampleFileToPatch(String fileName, String enodebName, String bandFreq)
+        //public static String loadSampleFileToPatch(String fileName, String enodebName, String bandFreq)
+        public static String loadSampleFileToPatch(cUserInput UserInputContext)
         {
             if (log.IsInfoEnabled) log.Info("loadSampleFileToPatch : Début Fonction");
 
+            userInput = UserInputContext;
+
             if (log.IsDebugEnabled)
             {
-                log.Debug(String.Format("loadSampleFileToPatch:Fichier sélecionné {0} ", fileName));
-                log.Debug(String.Format("loadSampleFileToPatch:enodebName sélecionné {0} ", enodebName));
-                log.Debug(String.Format("loadSampleFileToPatch:bandFreq sélecionné {0} ", bandFreq));
+                log.Debug(String.Format("loadSampleFileToPatch:Fichier sélecionné {0} ", userInput.xmlSourceFileName));
+                log.Debug(String.Format("loadSampleFileToPatch:enodebName sélecionné {0} ", userInput.selectedParentNodeB));
+                log.Debug(String.Format("loadSampleFileToPatch:bandFreq sélecionné {0} ", userInput.selectedParentBandeFreq));
 
             }
 
@@ -187,24 +207,14 @@ namespace AluLabConf
             xPathToUpdateInter pathToPatchInter = new xPathToUpdateInter();
             xPathToUpdateIntra pathToPatchIntra = new xPathToUpdateIntra();
 
-            userInput.xmlSourceFileName = fileName;
-            BandFreq selectedBandeFreq = new BandFreq();
-
-            string FolderName = System.IO.Path.GetDirectoryName(fileName);
-            
-            //recherche de la bandefreq dans les données du datamodel
-            findSelectedBandFreqInLab(bandFreq);
-
-            //recherche du nodeB dans les données du datamodel
-            findSelectedEnodeBInLab(enodebName);
+            string FolderName = System.IO.Path.GetDirectoryName(userInput.xmlSourceFileName);
 
             String strUniqueName = "eNB" + userInput.selectedParentNodeName.cEnodeB.iDenodeB.ToString() + "B" + userInput.selectedParentNodeName.cBandFreq.BandName.ToString() + "_10MHz";
             String strNodeBName = "eNB" + userInput.selectedParentNodeName.cEnodeB.iDenodeB.ToString() + "B" + userInput.selectedParentNodeName.cBandFreq.BandName.ToString();
 
             XmlDocument doc = new XmlDocument();
 
-            doc.Load(@fileName);            
-            
+            doc.Load(@userInput.xmlSourceFileName);                        
             XmlElement root = doc.DocumentElement;
 
            XmlNamespaceManager ns = new XmlNamespaceManager(doc.NameTable);
@@ -269,6 +279,40 @@ namespace AluLabConf
 
         }
 
+        public static BandFreq newFindSelectedBandFreqInLab(String bandFreq)
+        {
+
+            int localBandeFreq;
+            BandFreq objBandeFreq = new BandFreq();
+
+            if (int.TryParse(bandFreq, out localBandeFreq))
+            {
+
+                if (log.IsDebugEnabled) log.Debug(string.Format("findSelectedBandFreqInLab : localBandeFreq == {0}", localBandeFreq.ToString()));
+
+
+                if (null == readAluLab.BandFreqDuLab.Find(delegate(BandFreq a) { return a.BandName == localBandeFreq; }))
+                {
+                    if (log.IsErrorEnabled) log.Error(string.Format("findSelectedBandFreqInLab : La valeur recherchée n'est pas présente dans le fichier de configuration"));
+
+                }
+                else
+                {
+                    if (log.IsDebugEnabled) log.Debug(string.Format("findSelectedBandFreqInLab : ENFIN !!!!!!!!!!!!!!!!!!!!!!!!"));
+
+                    objBandeFreq = readAluLab.BandFreqDuLab.Find(delegate(BandFreq a) { return a.BandName == localBandeFreq; });
+
+                }
+            }
+            else
+            {
+                if (log.IsErrorEnabled) log.Error(string.Format("findSelectedBandFreqInLab : Erreur de conversion string bandFreq en Int"));
+            }
+
+            return objBandeFreq;
+
+        }
+
         public static void findSelectedEnodeBInLab(String enodebName)
         {
             int localEnodebName;
@@ -295,6 +339,36 @@ namespace AluLabConf
                 if (log.IsErrorEnabled) log.Error("Erreur de conversion string bandFred en Int");
             }
 
+        }
+
+        public static EnodeB newFindSelectedEnodeBInLab(String enodebName)
+        {
+            int localEnodebName;
+            EnodeB objEnodeB = new EnodeB();
+
+            if (int.TryParse(enodebName, out localEnodebName))
+            {
+
+                if (log.IsDebugEnabled) log.Debug(string.Format("localEnodebName == {0}", localEnodebName.ToString()));
+
+                if (null == readAluLab.EnodebDuLab.Find(delegate(EnodeB a) { return a.iDenodeB == localEnodebName; }))
+                {
+                    if (log.IsErrorEnabled) log.Error("findSelectedEnodeBInLab : La valeur recherchée n'est pas présente dans le fichier de configuration");
+                }
+                else
+                {
+                    objEnodeB = readAluLab.EnodebDuLab.Find(delegate(EnodeB a) { return a.iDenodeB == localEnodebName; });
+
+                    if (log.IsDebugEnabled) log.Debug("findSelectedEnodeBInLab : ENFIN !!!!!!!!!!!!!!!!!!!!!!!!");
+
+                }
+            }
+            else
+            {
+                if (log.IsErrorEnabled) log.Error("Erreur de conversion string bandFred en Int");
+            }
+
+            return objEnodeB;
         }
 
         public static void readXMLDocWithFieldsToUpdate(XmlElement xmlDocument, XmlNamespaceManager ns, xPathToUpdate pathToPatch)

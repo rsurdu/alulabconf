@@ -112,6 +112,8 @@ namespace AluLabConf
                 userInput.xmlSourceFileName = textBox1.Text;
                 userInput.selectedParentNodeB = oParentComboNodeB.SelectedValue.ToString();
                 userInput.selectedParentBandeFreq = oParentComboFreq.SelectedValue.ToString();
+                userInput.selectedParentNodeName.cEnodeB = Program.newFindSelectedEnodeBInLab(oParentComboNodeB.Text);
+                userInput.selectedParentNodeName.cBandFreq = Program.newFindSelectedBandFreqInLab(oParentComboFreq.Text);
 
                 /// remplissage de la structure du DataModel avec les données du mode inter
                 if (!oCheckBoxInterActivate.Checked)
@@ -125,7 +127,9 @@ namespace AluLabConf
                     userInput.selectedInter.interActivated = true;
                     userInput.selectedInter.selectedInterBandFreq = oInterComboBandFreq.Text;
                     userInput.selectedInter.selectedInterEnodeB = oInterComboNodeB.Text;
-
+                    userInput.selectedInter.structInterBandFreq = Program.newFindSelectedBandFreqInLab(oInterComboBandFreq.Text);
+                    userInput.selectedInter.structInterEnodeB = Program.newFindSelectedEnodeBInLab(oInterComboNodeB.Text);
+                    
                     if (oInterRadio10.Checked)
                     {
                         userInput.selectedInter.shortbandWidth = 10;
@@ -156,6 +160,7 @@ namespace AluLabConf
                 {
                     userInput.selectedIntra.intraActivated= true;
                     userInput.selectedIntra.selectedIntraEnodeB = oIntraComboNodeB.Text;
+                    userInput.selectedIntra.structIntraEnodeB = Program.newFindSelectedEnodeBInLab(oIntraComboNodeB.Text); 
 
                     if (oCheckBoxIntraS1.Checked)
                     {
@@ -171,7 +176,7 @@ namespace AluLabConf
 
                 //textBox2.Text = Program.loadSampleFileToPatch(textBox1.Text, oParentComboNodeB.Text, oParentComboFreq.Text);
                 Program.FctTest(userInput);
-            
+                textBox2.Text = Program.loadSampleFileToPatch(userInput);
             }
 
         }
